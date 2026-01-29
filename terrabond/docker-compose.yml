@@ -1,0 +1,200 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrabond-postgres
+    environment:
+      POSTGRES_DB: terrabond
+      POSTGRES_USER: terrabond
+      POSTGRES_PASSWORD: terrabond2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - terrabond-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrabond"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: terrabond-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - terrabond-network
+
+  # Eureka Service Discovery
+  eureka:
+    image: steeltoeoss/eureka-server:latest
+    container_name: terrabond-eureka
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_CLIENT_REGISTER_WITH_EUREKA: "false"
+      EUREKA_CLIENT_FETCH_REGISTRY: "false"
+    networks:
+      - terrabond-network
+
+  # API Gateway
+  gateway:
+    build: ./backend/api-gateway
+    container_name: terrabond-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka
+      - postgres
+    networks:
+      - terrabond-network
+
+  # Auth Service
+  auth-service:
+    build: ./backend/auth-service
+    container_name: terrabond-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/terrabond_auth
+      - SPRING_DATASOURCE_USERNAME=terrabond
+      - SPRING_DATASOURCE_PASSWORD=terrabond2026
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    networks:
+      - terrabond-network
+
+  # User Service
+  user-service:
+    build: ./backend/user-service
+    container_name: terrabond-user-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/terrabond_user
+      - SPRING_DATASOURCE_USERNAME=terrabond
+      - SPRING_DATASOURCE_PASSWORD=terrabond2026
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    networks:
+      - terrabond-network
+
+  # Social Service
+  social-service:
+    build: ./backend/social-service
+    container_name: terrabond-social-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/terrabond_social
+      - SPRING_DATASOURCE_USERNAME=terrabond
+      - SPRING_DATASOURCE_PASSWORD=terrabond2026
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    networks:
+      - terrabond-network
+
+  # Travel Service
+  travel-service:
+    build: ./backend/travel-service
+    container_name: terrabond-travel-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/terrabond_travel
+      - SPRING_DATASOURCE_USERNAME=terrabond
+      - SPRING_DATASOURCE_PASSWORD=terrabond2026
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    networks:
+      - terrabond-network
+
+  # Messaging Service
+  messaging-service:
+    build: ./backend/messaging-service
+    container_name: terrabond-messaging-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/terrabond_messaging
+      - SPRING_DATASOURCE_USERNAME=terrabond
+      - SPRING_DATASOURCE_PASSWORD=terrabond2026
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    networks:
+      - terrabond-network
+
+  # AI Service
+  ai-service:
+    build: ./ai-service
+    container_name: terrabond-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://terrabond:terrabond2026@postgres:5432/terrabond_ai
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - terrabond-network
+    volumes:
+      - ai_models:/app/models
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: terrabond-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - gateway
+    networks:
+      - terrabond-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  ai_models:
+
+networks:
+  terrabond-network:
+    driver: bridge
