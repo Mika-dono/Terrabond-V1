@@ -243,6 +243,51 @@ import { AuthService } from '../../../services/auth.service';
       width: 100%;
     }
     
+    /* Material Form Field Styles */
+    ::ng-deep .login-form .mat-mdc-form-field {
+      width: 100%;
+    }
+    
+    ::ng-deep .login-form .mdc-text-field--filled {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    ::ng-deep .login-form .mat-mdc-text-field-wrapper {
+      padding: 0 !important;
+    }
+    
+    ::ng-deep .login-form .mat-mdc-form-field-underline::after {
+      border-bottom-color: #FF5A65 !important;
+    }
+    
+    ::ng-deep .login-form .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(255, 90, 101, 0.05) !important;
+    }
+    
+    ::ng-deep .login-form input.mat-mdc-input-element {
+      color: #FFFFFF !important;
+      caret-color: #FF5A65 !important;
+      font-size: 16px !important;
+    }
+    
+    ::ng-deep .login-form input.mat-mdc-input-element::placeholder {
+      color: #7A7A7A !important;
+      opacity: 0.7 !important;
+    }
+    
+    ::ng-deep .login-form .mat-mdc-form-field-label {
+      color: #C1C1C1 !important;
+    }
+    
+    ::ng-deep .login-form .mat-mdc-form-field-focus-overlay {
+      opacity: 0.08 !important;
+    }
+    
+    ::ng-deep .login-form .mat-mdc-form-field-infix {
+      padding-top: 12px !important;
+      padding-bottom: 12px !important;
+    }
+    
     .form-options {
       display: flex;
       justify-content: space-between;

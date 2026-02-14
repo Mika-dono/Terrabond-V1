@@ -26,12 +26,7 @@
     </properties>
     
     <modules>
-        <module>api-gateway</module>
         <module>auth-service</module>
-        <module>user-service</module>
-        <module>social-service</module>
-        <module>travel-service</module>
-        <module>messaging-service</module>
         <module>common</module>
     </modules>
     

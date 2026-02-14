@@ -1,20 +1,4 @@
 // TerraBond Global Styles
-@import '@angular/material/theming';
-
-// Custom Theme Colors
-$terrabond-primary: mat-palette($mat-deep-orange, 500);
-$terrabond-accent: mat-palette($mat-pink, A200);
-$terrabond-warn: mat-palette($mat-red);
-
-$terrabond-theme: mat-dark-theme((
-  color: (
-    primary: $terrabond-primary,
-    accent: $terrabond-accent,
-    warn: $terrabond-warn,
-  )
-));
-
-@include angular-material-theme($terrabond-theme);
 
 // CSS Variables
 :root {

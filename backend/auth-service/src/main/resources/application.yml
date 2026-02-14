@@ -1,12 +1,12 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
     name: auth-service
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/terrabond_auth
+    url: jdbc:postgresql://terrabond-postgres:5432/terrabond_auth
     username: terrabond
     password: terrabond2026
     driver-class-name: org.postgresql.Driver
@@ -32,7 +32,7 @@ terrabond:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://terrabond-eureka:8761/eureka/
   instance:
     prefer-ip-address: true
 

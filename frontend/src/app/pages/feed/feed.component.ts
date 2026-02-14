@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -30,7 +31,8 @@ import { User } from '../../models/user.model';
     MatMenuModule,
     MatDividerModule,
     MatChipsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   template: `
     <div class="feed-container">
@@ -229,7 +231,7 @@ import { User } from '../../models/user.model';
               <img [src]="user.profilePicture || 'assets/default-avatar.png'" [alt]="user.username">
               <div>
                 <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
-                <span class="user-username">@{{ user.username }}</span>
+                <span class="user-username">{{'@'}}{{ user.username }}</span>
               </div>
             </a>
             <button mat-icon-button color="primary" (click)="followUser(user)">
